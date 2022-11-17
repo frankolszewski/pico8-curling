@@ -22,7 +22,8 @@ function _update() -- 1/30 sec
   if (show_angle_bar) then
     if (btnp(5)) then
       show_angle_bar=false
-      angle=-5*(MID_ANGLE-temp_angle)/MID_ANGLE
+      angle=0
+      -- angle=-5*(MID_ANGLE-temp_angle)/MID_ANGLE
     else
       if (temp_angle < 32) then
         incrementer=1.5
@@ -76,12 +77,12 @@ function _update() -- 1/30 sec
 
 
   if (active_stone) then
-    if (active_stone.speed -2 >= 0) then
+    if (active_stone.speed > 0) then
       stone.speed-=.5
       stone.x+=stone.angle
       stone.y+=-1*stone.speed
-      sfx(0,-1,20)
-      -- check_hit()
+      -- sfx(0,-1,20)
+      check_hit()
     else
       add(thrown_stones, active_stone)
       active_stone=nil
@@ -111,6 +112,20 @@ function draw_power_bar()
 end
 
 function check_hit()
+  if (thrown_stones[1]) then
+    local xs=8
+    local ys=8
+    local xd=abs((active_stone.x+(8/2))-(thrown_stones[1].x+(8/2)))
+    local yd=abs((active_stone.y+(8/2))-(thrown_stones[1].y+(8/2)))
+
+    print("xd: "..xd,40,40,0)
+    print("yd: "..yd,40,50,0)
+    if xd<xs and yd<ys then
+      active_stone.speed=0
+    end
+    
+    return hit
+  end
 end
 
 function create_stats()
@@ -148,7 +163,16 @@ function _draw() -- once per frame
     print("angle: "..temp_angle, 50, 50, 11)
     line(temp_angle,81,temp_angle,83,15)
   end
-  draw_score()
+  if (active_stone) then
+    print("x:"..active_stone.x, 20,20,0)
+    print("y:"..active_stone.y, 20,30,0)
+  end
+  
+  if (thrown_stones[1]) then
+    print("x:"..thrown_stones[1].x, 60,20,0)
+    print("y:"..thrown_stones[1].y, 60,30,0)
+  end
+    draw_score()
 end
 
 function draw_score()
